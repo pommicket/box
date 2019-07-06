@@ -1,0 +1,9 @@
+[ ] Enemies
+[ ] Reverse direction of gravity
+[ ] Pacman-style powerup
+
+[ ] Levels
+	[ ] 00 - Straight to flag
+	[ ] 01 - Spikes
+	[ ] 02 - Current "puzzle"
+	[ ] 03 - Enemies

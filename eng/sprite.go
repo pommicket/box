@@ -87,13 +87,33 @@ func ColorSprite() {
 	colorSprite = true
 }
 
+var clipW, clipH int32 = -1, -1
+
+func ClipBottomRight(w, h int) {
+	clipW, clipH = int32(w), int32(h)
+}
+
 // Renders the sprite to (x, y) scaled up by a factor of scale.
 func (s *Sprite) Render(x, y int, scale float64) error {
 	if s.texture == nil {
 		return throw("no texture", "A texture has not been created for the sprite.")
 	}
-	srcrect := sdl.Rect{0, 0, int32(s.Width), int32(s.Height)}
-	dstrect := sdl.Rect{int32(x), int32(y), int32(float64(s.Width) * scale), int32(float64(s.Height) * scale)}
+	var srcrect sdl.Rect
+	var width, height int
+	width, height = int(float64(s.Width)*scale), int(float64(s.Height)*scale)
+	srcrect.W = int32(width)
+	srcrect.H = int32(height)
+	dstrect := sdl.Rect{int32(x), int32(y), int32(width), int32(height)}
+	if clipW >= 0 {
+		srcrect.W = int32(float64(clipW) / scale)
+		dstrect.W = clipW
+		clipW = -1
+	}
+	if clipH >= 0 {
+		srcrect.H = int32(float64(clipH) / scale)
+		dstrect.H = clipH
+		clipH = -1
+	}
 	if colorSprite {
 		s.texture.SetColorMod(color.R, color.G, color.B)
 		s.texture.SetAlphaMod(color.A)

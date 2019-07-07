@@ -11,6 +11,7 @@ var boxFrown, boxSmile eng.Sprite
 var boxLock sync.Mutex
 var boxIsStrong bool
 var boxGainedStrengthTime float64
+var boxGainedPauseTime float64
 
 var boxCollidesWith = map[ObjectKind]bool{
 	NONE:           false,
@@ -26,6 +27,7 @@ func resetBox() {
 	// Resets box velocity
 	boxVelX = 0
 	boxVelY = 0
+	boxIsStrong = false
 }
 
 type Event int
@@ -36,6 +38,7 @@ const (
 	GOAL_REACHED
 	GOT_GRAVITY
 	GOT_STRENGTH
+	GOT_PAUSE
 )
 
 // Returns true if box hit spike
@@ -44,20 +47,34 @@ func updateBox(dt float64) Event {
 	defer boxLock.Unlock()
 	var event Event
 	boxLastX, boxLastY = boxX, boxY
-	boxX, boxY, boxVelX, boxVelY, event = update(dt, boxX, boxY, boxVelX, boxVelY, false, boxCollidesWith)
+	boxX, boxY, boxVelX, boxVelY, event = update(dt, boxX, boxY, boxLastX, boxLastY, boxVelX, boxVelY, false, boxCollidesWith)
 	if At(int(boxX), int(boxY)).GetKind() == GOAL_FLAG {
 		return GOAL_REACHED
+	}
+	if event == ENEMY_HIT && boxIsStrong {
+		event = NOTHING // for spikes
 	}
 	if event == GOT_STRENGTH {
 		boxIsStrong = true
 		boxGainedStrengthTime = 0
 		event = NOTHING // Higher up functions don't need to know about this
 	}
+	if event == GOT_PAUSE {
+		enemiesPaused = true
+		boxGainedPauseTime = 0
+		event = NOTHING
+	}
 	if boxIsStrong {
 		boxGainedStrengthTime += dt
 		if boxGainedStrengthTime >= 5 {
 			// Powerup lasts for 5 seconds
 			boxIsStrong = false
+		}
+	}
+	if enemiesPaused {
+		boxGainedPauseTime += dt
+		if boxGainedPauseTime >= 5 {
+			enemiesPaused = false
 		}
 	}
 	if event != NOTHING {

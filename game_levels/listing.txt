@@ -5,3 +5,4 @@ enemy
 testing
 gravity
 strength
+pause

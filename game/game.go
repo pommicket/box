@@ -88,6 +88,8 @@ func Render() state.State {
 	return nextState
 }
 
+var pausedUsingP bool
+
 func keyUp(key int) {
 	if !shown {
 		return
@@ -101,5 +103,14 @@ func keyUp(key int) {
 		mutex.Lock()
 		defer mutex.Unlock()
 		nextState = state.LEVEL_SELECT
+	case eng.KEY_p:
+		if common.IsPaused() {
+			if pausedUsingP {
+				common.SetGameSpeed(1)
+			}
+		} else {
+			common.PauseGame()
+			pausedUsingP = true
+		}
 	}
 }

@@ -15,8 +15,10 @@ func sgn(x float64) int {
 	}
 }
 
-const conveyor_speed = 2 // In tiles / sec
-var gravity float64 = 5
+const conveyorSpeed = 2 // In tiles / sec
+const defaultGravity = 5
+
+var gravity float64
 var physicsMutex sync.Mutex
 
 func collisionEvent(obj *Object) Event {
@@ -30,11 +32,14 @@ func collisionEvent(obj *Object) Event {
 	case POWERUP_STRENGTH:
 		event = GOT_STRENGTH
 		obj.Kind = NONE // got this powerup
+	case POWERUP_PAUSE:
+		event = GOT_PAUSE
+		obj.Kind = NONE
 	}
 	return event
 }
 
-func update(dt, x, y, velX, velY float64, isEnemy bool, collidesWith map[ObjectKind]bool) (float64, float64, float64, float64, Event) {
+func update(dt, x, y, lastX, lastY, velX, velY float64, isEnemy bool, collidesWith map[ObjectKind]bool) (float64, float64, float64, float64, Event) {
 	physicsMutex.Lock()
 	defer physicsMutex.Unlock()
 	x += dt * velX
@@ -86,10 +91,10 @@ func update(dt, x, y, velX, velY float64, isEnemy bool, collidesWith map[ObjectK
 			velY = 0
 			if obj.Kind == CONVEYOR_LEFT {
 				// Move to the left
-				velX = -conveyor_speed * conveyorSpeedMultiplier
+				velX = -conveyorSpeed * conveyorSpeedMultiplier
 			} else if obj.Kind == CONVEYOR_RIGHT {
 				// Move to the right
-				velX = +conveyor_speed * conveyorSpeedMultiplier
+				velX = +conveyorSpeed * conveyorSpeedMultiplier
 			}
 		}
 		obj.mutex.Unlock()

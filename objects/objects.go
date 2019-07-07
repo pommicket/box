@@ -22,6 +22,7 @@ const (
 	GOAL_FLAG
 	POWERUP_GRAVITY
 	POWERUP_STRENGTH
+	POWERUP_PAUSE
 )
 
 var spriteFilenames = map[ObjectKind]string{
@@ -35,6 +36,7 @@ var spriteFilenames = map[ObjectKind]string{
 	GOAL_FLAG:        "goal_flag.bmp",
 	POWERUP_GRAVITY:  "gravity.bmp",
 	POWERUP_STRENGTH: "strength.bmp",
+	POWERUP_PAUSE:    "pause.bmp",
 }
 var sprites map[ObjectKind]*eng.Sprite
 var leftSprite, rightSprite eng.Sprite
@@ -130,21 +132,11 @@ func TileSize() int {
 	return eng.Width() / TilesX
 }
 
-func (o *Object) render(ghost bool) {
+func (o *Object) renderArrow(ghost bool) {
 	o.mutex.Lock()
 	defer o.mutex.Unlock()
-	if o.Kind == NONE {
-		return
-	}
-	sprite := sprites[o.Kind]
-	scale := float64(TileSize()) / float64(sprite.Width)
-	pixelX, pixelY := TileToPixel(o.X, o.Y)
-	if ghost {
-		eng.SetRGBA(255, 255, 255, 127)
-		eng.ColorSprite()
-	}
-	sprite.Render(pixelX, pixelY, scale)
-	// Draw arrow
+	scale := float64(Scale())
+	// Draw arrow (maybe)
 	var arrowSprite eng.Sprite
 
 	if o.Kind == CONVEYOR_LEFT {
@@ -152,7 +144,6 @@ func (o *Object) render(ghost bool) {
 	} else if o.Kind == CONVEYOR_RIGHT {
 		arrowSprite = rightSprite
 	}
-
 	if arrowSprite.Loaded() {
 		x := o.X*TileSize() + int(o.arrowX*float64(TileSize()))
 		y := o.Y*TileSize() + TileSize()/2
@@ -160,8 +151,32 @@ func (o *Object) render(ghost bool) {
 			eng.SetRGBA(255, 255, 255, 127)
 			eng.ColorSprite()
 		}
+		// Make sure right side of arrow isn't somewhere it shouldn't be.
+		if o2 := At(o.X+1, o.Y); o2 != nil && o2.GetKind() != o.Kind {
+			rightEdgeOfArrow := x + arrowSprite.Width*Scale()
+			leftEdgeOfNextTile := (o.X + 1) * TileSize()
+			if rightEdgeOfArrow > leftEdgeOfNextTile {
+				eng.ClipBottomRight(leftEdgeOfNextTile-x, -1)
+			}
+		}
 		arrowSprite.Render(x, y, scale)
 	}
+}
+
+func (o *Object) render(ghost bool) {
+	o.mutex.Lock()
+	defer o.mutex.Unlock()
+	if o.Kind == NONE {
+		return
+	}
+	sprite := sprites[o.Kind]
+	scale := float64(Scale())
+	pixelX, pixelY := TileToPixel(o.X, o.Y)
+	if ghost {
+		eng.SetRGBA(255, 255, 255, 127)
+		eng.ColorSprite()
+	}
+	sprite.Render(pixelX, pixelY, scale)
 }
 
 func (o *Object) Update(dt float64) {
@@ -177,11 +192,13 @@ func (o *Object) Update(dt float64) {
 			o.Kind = GOAL_FLAG
 		}
 	}
-	o.arrowX = math.Mod(o.arrowX, 1)
+	// math.Mod isn't really mod! ):<
+	o.arrowX = math.Mod(math.Mod(o.arrowX, 1)+1, 1)
 }
 
 func (o *Object) RenderGhost() {
 	o.render(true)
+	o.renderArrow(true)
 }
 
 func (o *Object) Render() {
@@ -196,6 +213,11 @@ func RenderAll(showGrid bool) {
 				eng.Rectangle(x*TileSize(), y*TileSize(), TileSize(), TileSize(), eng.DRAW)
 			}
 			At(x, y).Render()
+		}
+	}
+	for y := range objects {
+		for x := range objects[y] {
+			At(x, y).renderArrow(false)
 		}
 	}
 	if state.Get() == state.GAME {
@@ -227,6 +249,7 @@ func ClearAll() {
 	resetBox()
 	clearAllEnemies()
 	common.SetGameSpeed(1)
+	gravity = defaultGravity
 }
 
 func mouseUp(button, x, y int) {

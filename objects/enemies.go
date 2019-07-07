@@ -9,6 +9,8 @@ type Enemy struct {
 	mutex sync.Mutex
 	x     float64
 	y     float64
+	lastX float64
+	lastY float64
 	velX  float64
 	velY  float64
 	dead  bool
@@ -16,6 +18,7 @@ type Enemy struct {
 
 var enemies []Enemy
 var scaredEnemySprite eng.Sprite
+var enemiesPaused bool
 
 var enemyCollidesWith = map[ObjectKind]bool{
 	NONE:             false,
@@ -42,10 +45,13 @@ func addEnemy(x, y int) {
 func (e *Enemy) Update(dt float64) {
 	e.mutex.Lock()
 	defer e.mutex.Unlock()
-	if e.dead {
+	if e.dead || enemiesPaused {
 		return
 	}
-	e.x, e.y, e.velX, e.velY, _ = update(dt, e.x, e.y, e.velX, e.velY, true, enemyCollidesWith)
+	lx, ly := e.x, e.y
+	e.x, e.y, e.velX, e.velY, _ = update(dt, e.x, e.y, e.lastX, e.lastY, e.velX, e.velY, true, enemyCollidesWith)
+	e.lastX = lx
+	e.lastY = ly
 }
 
 func updateAllEnemies(dt float64) {

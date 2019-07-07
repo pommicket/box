@@ -39,11 +39,13 @@ func collisionEvent(obj *Object) Event {
 	return event
 }
 
-func update(dt, x, y, lastX, lastY, velX, velY float64, isEnemy bool, collidesWith map[ObjectKind]bool) (float64, float64, float64, float64, Event) {
+func update(dt, x, y, velX, velY float64, isEnemy bool, collidesWith map[ObjectKind]bool) (float64, float64, float64, float64, Event) {
 	physicsMutex.Lock()
 	defer physicsMutex.Unlock()
+	lastX, lastY := x, y
 	x += dt * velX
 	y += dt*velY + 0.5*dt*dt*gravity
+	velY += gravity * dt
 	var conveyorSpeedMultiplier float64
 	if isEnemy {
 		conveyorSpeedMultiplier = -1
@@ -76,9 +78,26 @@ func update(dt, x, y, lastX, lastY, velX, velY float64, isEnemy bool, collidesWi
 			inFrontOfY = inFrontOfY[:1]
 		}
 	}
+	var newIFY []*Object
+	locked := make(map[*Object]bool)
+	for _, o := range inFrontOfY {
+		o.mutex.Lock()
+		defer o.mutex.Unlock()
+		locked[o] = true
+		oY := float64(o.Y)
+		if velY < 0 {
+			if lastY > oY+1 && y < oY+1 {
+				newIFY = append(newIFY, o)
+			}
+		} else {
+			if lastY+1 <= oY && y+1 > oY {
+				newIFY = append(newIFY, o)
+			}
+		}
+	}
+	inFrontOfY = newIFY
 
 	for _, obj := range inFrontOfY {
-		obj.mutex.Lock()
 		if event == NOTHING && !isEnemy {
 			event = collisionEvent(obj)
 		}
@@ -97,7 +116,6 @@ func update(dt, x, y, lastX, lastY, velX, velY float64, isEnemy bool, collidesWi
 				velX = +conveyorSpeed * conveyorSpeedMultiplier
 			}
 		}
-		obj.mutex.Unlock()
 	}
 
 	if velX != 0 {
@@ -112,9 +130,26 @@ func update(dt, x, y, lastX, lastY, velX, velY float64, isEnemy bool, collidesWi
 			inFrontOfX = inFrontOfX[:1]
 		}
 	}
+	var newIFX []*Object
+	for _, o := range inFrontOfX {
+		if !locked[o] {
+			o.mutex.Lock()
+			defer o.mutex.Unlock()
+		}
+		oX := float64(o.X)
+		if velX < 0 {
+			if lastX > oX+1 && x < oX+1 {
+				newIFX = append(newIFX, o)
+			}
+		} else {
+			if lastX+1 < oX && x+1 > oX {
+				newIFX = append(newIFX, o)
+			}
+		}
+	}
+	inFrontOfX = newIFX
 
 	for _, obj := range inFrontOfX {
-		obj.mutex.Lock()
 		if event == NOTHING && !isEnemy {
 			event = collisionEvent(obj)
 		}
@@ -126,10 +161,8 @@ func update(dt, x, y, lastX, lastY, velX, velY float64, isEnemy bool, collidesWi
 			}
 			velX = 0
 		}
-		obj.mutex.Unlock()
 	}
 
-	velY += gravity * dt
 	return x, y, velX, velY, event
 }
 

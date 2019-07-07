@@ -9,8 +9,6 @@ type Enemy struct {
 	mutex sync.Mutex
 	x     float64
 	y     float64
-	lastX float64
-	lastY float64
 	velX  float64
 	velY  float64
 	dead  bool
@@ -48,10 +46,7 @@ func (e *Enemy) Update(dt float64) {
 	if e.dead || enemiesPaused {
 		return
 	}
-	lx, ly := e.x, e.y
-	e.x, e.y, e.velX, e.velY, _ = update(dt, e.x, e.y, e.lastX, e.lastY, e.velX, e.velY, true, enemyCollidesWith)
-	e.lastX = lx
-	e.lastY = ly
+	e.x, e.y, e.velX, e.velY, _ = update(dt, e.x, e.y, e.velX, e.velY, true, enemyCollidesWith)
 }
 
 func updateAllEnemies(dt float64) {

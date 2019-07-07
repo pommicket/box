@@ -41,13 +41,15 @@ const (
 	GOT_PAUSE
 )
 
+const powerupTime = 8
+
 // Returns true if box hit spike
 func updateBox(dt float64) Event {
 	boxLock.Lock()
 	defer boxLock.Unlock()
 	var event Event
 	boxLastX, boxLastY = boxX, boxY
-	boxX, boxY, boxVelX, boxVelY, event = update(dt, boxX, boxY, boxLastX, boxLastY, boxVelX, boxVelY, false, boxCollidesWith)
+	boxX, boxY, boxVelX, boxVelY, event = update(dt, boxX, boxY, boxVelX, boxVelY, false, boxCollidesWith)
 	if At(int(boxX), int(boxY)).GetKind() == GOAL_FLAG {
 		return GOAL_REACHED
 	}
@@ -66,14 +68,13 @@ func updateBox(dt float64) Event {
 	}
 	if boxIsStrong {
 		boxGainedStrengthTime += dt
-		if boxGainedStrengthTime >= 5 {
-			// Powerup lasts for 5 seconds
+		if boxGainedStrengthTime >= powerupTime {
 			boxIsStrong = false
 		}
 	}
 	if enemiesPaused {
 		boxGainedPauseTime += dt
-		if boxGainedPauseTime >= 5 {
+		if boxGainedPauseTime >= powerupTime {
 			enemiesPaused = false
 		}
 	}

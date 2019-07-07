@@ -17,6 +17,8 @@ var kindsForKeys = map[int]objects.ObjectKind{
 	eng.KEY_r: objects.CONVEYOR_RIGHT,
 	eng.KEY_p: objects.PORTAL,
 	eng.KEY_g: objects.GOAL,
+	eng.KEY_1: objects.POWERUP_GRAVITY,
+	eng.KEY_2: objects.POWERUP_STRENGTH,
 }
 
 var currentlyPlacing objects.ObjectKind
@@ -60,21 +62,29 @@ func keyUp(keyCode int) {
 		return
 	case eng.KEY_s:
 		if eng.IsCtrl() {
+			oldSaveFile := saveFile
 			if eng.IsShift() || saveFile == "" {
 				fmt.Print("Save as? ")
 				fmt.Scanln(&saveFile)
 			}
 			if saveFile != "" {
-				levels.Save(saveFile)
+				if err := levels.Save(saveFile); err != nil {
+					fmt.Println("Error saving level:", err)
+					saveFile = oldSaveFile
+				}
 			}
 			return
 		}
 	case eng.KEY_o:
 		if eng.IsCtrl() {
+			oldSaveFile := saveFile
 			fmt.Print("Open? ")
 			fmt.Scanln(&saveFile)
 			if saveFile != "" {
-				levels.Load(saveFile)
+				if err := levels.Load(saveFile); err != nil {
+					fmt.Println("Error loading level:", err)
+					saveFile = oldSaveFile
+				}
 			}
 		}
 	}

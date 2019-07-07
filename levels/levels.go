@@ -2,7 +2,6 @@ package levels
 
 import (
 	"encoding/binary"
-	"fmt"
 	"github.com/pommicket/box/objects"
 	"os"
 )
@@ -15,51 +14,58 @@ type Version struct {
 var version = Version{0, 0}
 
 // Saves current objects as a level.
-func Save(filename string) {
+func Save(filename string) error {
 	file, err := os.Create("game_levels/" + filename + ".box")
 	if err != nil {
-		fmt.Println("Error saving level as", filename, ":", err)
-		os.Exit(-1)
+		return err
 	}
 
-	write := func(x interface{}) {
+	write := func(x interface{}) error {
 		err := binary.Write(file, binary.LittleEndian, x)
 		if err != nil {
 			file.Close()
-			fmt.Println("Error saving level as", filename, ":", err)
-			os.Exit(-1)
+			return err
 		}
+		return nil
 	}
 
-	write(version)
+	if err := write(version); err != nil {
+		return err
+	}
 	for y := 0; y < objects.TilesY; y++ {
 		for x := 0; x < objects.TilesX; x++ {
-			write(int32(objects.At(x, y).Kind))
+			if err := write(int32(objects.At(x, y).Kind)); err != nil {
+				return err
+			}
 		}
 	}
-	file.Close()
+	return file.Close()
 }
 
-func Load(filename string) {
+func Load(filename string) error {
 	file, err := os.Open("game_levels/" + filename + ".box")
 
 	if err != nil {
-		fmt.Println("Error loading level", filename, ":", err)
-		os.Exit(-1)
+		return err
 	}
 
-	read := func(x interface{}) {
-		binary.Read(file, binary.LittleEndian, x)
+	read := func(x interface{}) error {
+		return binary.Read(file, binary.LittleEndian, x)
 	}
 
 	objects.ClearAll()
-	read(&version)
+	if err := read(&version); err != nil {
+		return err
+	}
 	for y := 0; y < objects.TilesY; y++ {
 		for x := 0; x < objects.TilesX; x++ {
 			var kind int32
-			read(&kind)
+			if err := read(&kind); err != nil {
+				return err
+			}
 			objects.At(x, y).Set(objects.ObjectKind(kind), true)
 
 		}
 	}
+	return nil
 }

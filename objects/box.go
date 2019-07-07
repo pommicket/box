@@ -9,6 +9,8 @@ var boxTileX, boxTileY int
 var boxX, boxY, boxLastX, boxLastY, boxVelX, boxVelY float64
 var boxFrown, boxSmile eng.Sprite
 var boxLock sync.Mutex
+var boxIsStrong bool
+var boxGainedStrengthTime float64
 
 var boxCollidesWith = map[ObjectKind]bool{
 	NONE:           false,
@@ -32,6 +34,8 @@ const (
 	NOTHING = Event(iota)
 	ENEMY_HIT
 	GOAL_REACHED
+	GOT_GRAVITY
+	GOT_STRENGTH
 )
 
 // Returns true if box hit spike
@@ -40,14 +44,26 @@ func updateBox(dt float64) Event {
 	defer boxLock.Unlock()
 	var event Event
 	boxLastX, boxLastY = boxX, boxY
-	boxX, boxY, boxVelX, boxVelY, event = update(dt, boxX, boxY, boxVelX, boxVelY, 1, boxCollidesWith)
+	boxX, boxY, boxVelX, boxVelY, event = update(dt, boxX, boxY, boxVelX, boxVelY, false, boxCollidesWith)
 	if At(int(boxX), int(boxY)).GetKind() == GOAL_FLAG {
 		return GOAL_REACHED
+	}
+	if event == GOT_STRENGTH {
+		boxIsStrong = true
+		boxGainedStrengthTime = 0
+		event = NOTHING // Higher up functions don't need to know about this
+	}
+	if boxIsStrong {
+		boxGainedStrengthTime += dt
+		if boxGainedStrengthTime >= 5 {
+			// Powerup lasts for 5 seconds
+			boxIsStrong = false
+		}
 	}
 	if event != NOTHING {
 		return event
 	}
-	if anyEnemyCollidesWith(boxX, boxY) {
+	if anyEnemyCollidesWith(boxX, boxY, boxIsStrong) {
 		return ENEMY_HIT
 	}
 	return NOTHING

@@ -2,6 +2,7 @@ package objects
 
 import (
 	"math"
+	"sync"
 )
 
 func sgn(x float64) int {
@@ -15,11 +16,35 @@ func sgn(x float64) int {
 }
 
 const conveyor_speed = 2 // In tiles / sec
-const gravity = 5
+var gravity float64 = 5
+var physicsMutex sync.Mutex
 
-func update(dt, x, y, velX, velY, conveyorSpeedMultiplier float64, collidesWith map[ObjectKind]bool) (float64, float64, float64, float64, Event) {
+func collisionEvent(obj *Object) Event {
+	event := NOTHING
+	switch obj.Kind {
+	case SPIKE:
+		event = ENEMY_HIT
+	case POWERUP_GRAVITY:
+		event = GOT_GRAVITY
+		obj.Kind = NONE // got this powerup
+	case POWERUP_STRENGTH:
+		event = GOT_STRENGTH
+		obj.Kind = NONE // got this powerup
+	}
+	return event
+}
+
+func update(dt, x, y, velX, velY float64, isEnemy bool, collidesWith map[ObjectKind]bool) (float64, float64, float64, float64, Event) {
+	physicsMutex.Lock()
+	defer physicsMutex.Unlock()
 	x += dt * velX
 	y += dt*velY + 0.5*dt*dt*gravity
+	var conveyorSpeedMultiplier float64
+	if isEnemy {
+		conveyorSpeedMultiplier = -1
+	} else {
+		conveyorSpeedMultiplier = +1
+	}
 
 	var inFrontOfX, inFrontOfY []*Object // Objects in directions of motion of object
 	event := NOTHING
@@ -49,9 +74,8 @@ func update(dt, x, y, velX, velY, conveyorSpeedMultiplier float64, collidesWith 
 
 	for _, obj := range inFrontOfY {
 		obj.mutex.Lock()
-		switch obj.Kind {
-		case SPIKE:
-			event = ENEMY_HIT
+		if event == NOTHING && !isEnemy {
+			event = collisionEvent(obj)
 		}
 		if collidesWith[obj.Kind] {
 			if velY > 0 {
@@ -86,9 +110,8 @@ func update(dt, x, y, velX, velY, conveyorSpeedMultiplier float64, collidesWith 
 
 	for _, obj := range inFrontOfX {
 		obj.mutex.Lock()
-		switch obj.Kind {
-		case SPIKE:
-			event = ENEMY_HIT
+		if event == NOTHING && !isEnemy {
+			event = collisionEvent(obj)
 		}
 		if collidesWith[obj.Kind] {
 			if velX > 0 {
@@ -103,4 +126,10 @@ func update(dt, x, y, velX, velY, conveyorSpeedMultiplier float64, collidesWith 
 
 	velY += gravity * dt
 	return x, y, velX, velY, event
+}
+
+func ReverseGravity() {
+	physicsMutex.Lock()
+	defer physicsMutex.Unlock()
+	gravity *= -1
 }

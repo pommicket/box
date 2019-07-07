@@ -20,17 +20,21 @@ const (
 	PORTAL
 	GOAL
 	GOAL_FLAG
+	POWERUP_GRAVITY
+	POWERUP_STRENGTH
 )
 
 var spriteFilenames = map[ObjectKind]string{
-	BOX:            "box.bmp",
-	ENEMY:          "enemy.bmp",
-	SPIKE:          "spike.bmp",
-	CONVEYOR_LEFT:  "conveyor.bmp",
-	CONVEYOR_RIGHT: "conveyor.bmp",
-	PORTAL:         "portal.bmp",
-	GOAL:           "goal.bmp",
-	GOAL_FLAG:      "goal_flag.bmp",
+	BOX:              "box.bmp",
+	ENEMY:            "enemy.bmp",
+	SPIKE:            "spike.bmp",
+	CONVEYOR_LEFT:    "conveyor.bmp",
+	CONVEYOR_RIGHT:   "conveyor.bmp",
+	PORTAL:           "portal.bmp",
+	GOAL:             "goal.bmp",
+	GOAL_FLAG:        "goal_flag.bmp",
+	POWERUP_GRAVITY:  "gravity.bmp",
+	POWERUP_STRENGTH: "strength.bmp",
 }
 var sprites map[ObjectKind]*eng.Sprite
 var leftSprite, rightSprite eng.Sprite

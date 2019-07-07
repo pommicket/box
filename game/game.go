@@ -1,11 +1,13 @@
 package game
 
 import (
+	"fmt"
 	"github.com/pommicket/box/common"
 	"github.com/pommicket/box/eng"
 	"github.com/pommicket/box/levels"
 	"github.com/pommicket/box/objects"
 	"github.com/pommicket/box/state"
+	"os"
 	"sync"
 )
 
@@ -21,7 +23,10 @@ func Load() {
 }
 
 func ResetLevel() {
-	levels.Load(Level)
+	if err := levels.Load(Level); err != nil {
+		fmt.Println("Error loading level:", err)
+		os.Exit(-1)
+	}
 }
 
 func Show() {
@@ -61,6 +66,8 @@ func Update(dt float64) {
 			eventTime = common.AbsTime()
 			goalReached = true
 			common.PauseGame()
+		case objects.GOT_GRAVITY:
+			objects.ReverseGravity()
 		case objects.NOTHING:
 		}
 	}

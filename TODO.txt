@@ -1,9 +1,9 @@
 [X] Enemies
 [X] Restart level
 [X] Back to level select
-[ ] Powerups
-	[ ] Reverse direction of gravity
-	[ ] Pacman-like thing
+[X] Powerups
+	[X] Reverse direction of gravity
+	[X] Pacman-like thing
 [ ] Fix conveyor belts
 [ ] Levels
 	[ ] 00 - Straight to flag

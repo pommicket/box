@@ -12,6 +12,7 @@ const (
 	LEVEL_EDITOR
 	LEVEL_SELECT
 	GAME
+	EXIT
 )
 
 var current State

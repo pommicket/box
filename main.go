@@ -44,6 +44,8 @@ func switchToNewState(newState state.State) {
 		levelsel.Show()
 	case state.GAME:
 		game.Show()
+	case state.EXIT:
+		eng.Close()
 	}
 }
 

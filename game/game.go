@@ -82,10 +82,17 @@ func Render() state.State {
 }
 
 func keyUp(key int) {
+	if !shown {
+		return
+	}
 	switch key {
 	case eng.KEY_r:
 		if !common.IsPaused() {
 			ResetLevel()
 		}
+	case eng.KEY_ESCAPE:
+		mutex.Lock()
+		defer mutex.Unlock()
+		nextState = state.LEVEL_SELECT
 	}
 }

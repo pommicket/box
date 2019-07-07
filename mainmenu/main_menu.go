@@ -9,7 +9,9 @@ import (
 
 var start widgets.Button
 var levelEditor widgets.Button
+var exit widgets.Button
 var nextState state.State
+var shown bool
 
 func Load() {
 	start.LoadAll("start.bmp")
@@ -25,17 +27,29 @@ func Load() {
 	levelEditor.OnClick = func() {
 		nextState = state.LEVEL_EDITOR
 	}
+	exit.LoadAll("exit.bmp")
+	exit.Scale = 4
+	exit.Pos.SetParent(&levelEditor.Pos, widgets.TOP_MIDDLE, widgets.BOTTOM_MIDDLE)
+	exit.Pos.Move(0, 8)
+	exit.OnClick = func() {
+		nextState = state.EXIT
+	}
+	eng.OnKeyUp(keyUp)
 }
 
 func Show() {
 	start.Show()
 	levelEditor.Show()
+	exit.Show()
 	nextState = state.MAIN_MENU
+	shown = true
 }
 
 func Hide() {
 	start.Hide()
 	levelEditor.Hide()
+	exit.Hide()
+	shown = false
 }
 
 func Render() state.State {
@@ -43,4 +57,14 @@ func Render() state.State {
 	eng.SetColor(common.Color1)
 	eng.Clear()
 	return nextState
+}
+
+func keyUp(key int) {
+	if !shown {
+		return
+	}
+	switch key {
+	case eng.KEY_ESCAPE:
+		nextState = state.EXIT
+	}
 }

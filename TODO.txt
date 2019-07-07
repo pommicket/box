@@ -1,10 +1,10 @@
 [X] Enemies
-[ ] Restart level
-[ ] Back to level select
+[X] Restart level
+[X] Back to level select
 [ ] Powerups
 	[ ] Reverse direction of gravity
 	[ ] Pacman-like thing
-
+[ ] Fix conveyor belts
 [ ] Levels
 	[ ] 00 - Straight to flag
 	[ ] 01 - Spikes

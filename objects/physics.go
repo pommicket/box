@@ -14,7 +14,10 @@ func sgn(x float64) int {
 	}
 }
 
-func update(dt, x, y, velX, velY float64, collidesWith map[ObjectKind]bool) (float64, float64, float64, float64, Event) {
+const conveyor_speed = 2 // In tiles / sec
+const gravity = 5
+
+func update(dt, x, y, velX, velY, conveyorSpeedMultiplier float64, collidesWith map[ObjectKind]bool) (float64, float64, float64, float64, Event) {
 	x += dt * velX
 	y += dt*velY + 0.5*dt*dt*gravity
 
@@ -46,17 +49,17 @@ func update(dt, x, y, velX, velY float64, collidesWith map[ObjectKind]bool) (flo
 		obj.mutex.Lock()
 		switch obj.Kind {
 		case SPIKE:
-			event = SPIKE_HIT
+			event = ENEMY_HIT
 		}
 		if collidesWith[obj.Kind] {
 			velY = 0
 			y = float64(int(y)) // Truncate
 			if obj.Kind == CONVEYOR_LEFT {
 				// Move to the left
-				velX = -conveyor_speed
+				velX = -conveyor_speed * conveyorSpeedMultiplier
 			} else if obj.Kind == CONVEYOR_RIGHT {
 				// Move to the right
-				velX = +conveyor_speed
+				velX = +conveyor_speed * conveyorSpeedMultiplier
 			}
 		}
 		obj.mutex.Unlock()
@@ -74,7 +77,7 @@ func update(dt, x, y, velX, velY float64, collidesWith map[ObjectKind]bool) (flo
 		obj.mutex.Lock()
 		switch obj.Kind {
 		case SPIKE:
-			event = SPIKE_HIT
+			event = ENEMY_HIT
 		}
 		if collidesWith[obj.Kind] {
 			velX = 0

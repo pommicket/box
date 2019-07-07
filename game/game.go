@@ -47,7 +47,7 @@ func Update(dt float64) {
 		}
 	} else {
 		switch objects.UpdateAll(dt) {
-		case objects.SPIKE_HIT:
+		case objects.ENEMY_HIT:
 			eventTime = common.AbsTime()
 			hitSpike = true
 			common.PauseGame()

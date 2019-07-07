@@ -1,6 +1,9 @@
-[ ] Enemies
-[ ] Reverse direction of gravity
-[ ] Pacman-style powerup
+[X] Enemies
+[ ] Restart level
+[ ] Back to level select
+[ ] Powerups
+	[ ] Reverse direction of gravity
+	[ ] Pacman-like thing
 
 [ ] Levels
 	[ ] 00 - Straight to flag

@@ -87,7 +87,7 @@ func At(x int, y int) *Object {
 }
 
 func Scale() int {
-	return (eng.Width() / TilesX) / 20
+	return TileSize() / 20
 }
 
 func (o *Object) Set(kind ObjectKind, checkBox bool) {
@@ -106,6 +106,10 @@ func (o *Object) Set(kind ObjectKind, checkBox bool) {
 		// Don't actually place box
 		boxX = float64(o.X)
 		boxY = float64(o.Y)
+		return
+	} else if kind == ENEMY {
+		// Don't actually place enemy
+		addEnemy(o.X, o.Y)
 		return
 	}
 	o.Kind = kind
@@ -165,7 +169,9 @@ func (o *Object) Update(dt float64) {
 	case CONVEYOR_RIGHT:
 		o.arrowX += dt / 2
 	case GOAL:
-		o.Kind = GOAL_FLAG
+		if allEnemiesDead() {
+			o.Kind = GOAL_FLAG
+		}
 	}
 	o.arrowX = math.Mod(o.arrowX, 1)
 }
@@ -190,6 +196,7 @@ func RenderAll(showGrid bool) {
 	}
 	if state.Get() == state.GAME {
 		renderBox()
+		renderAllEnemies()
 	}
 }
 
@@ -200,6 +207,7 @@ func UpdateAll(dt float64) Event {
 		}
 	}
 	if state.Get() == state.GAME {
+		updateAllEnemies(dt)
 		return updateBox(dt)
 	}
 	return NOTHING
@@ -213,6 +221,7 @@ func ClearAll() {
 		}
 	}
 	resetBox()
+	clearAllEnemies()
 	common.SetGameSpeed(1)
 }
 

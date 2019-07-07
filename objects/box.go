@@ -6,13 +6,11 @@ import (
 )
 
 var boxTileX, boxTileY int
-var boxX, boxY, boxVelX, boxVelY float64
+var boxX, boxY, boxLastX, boxLastY, boxVelX, boxVelY float64
 var boxFrown, boxSmile eng.Sprite
 var boxLock sync.Mutex
 
-const conveyor_speed = 2 // In tiles / sec
-
-var collidesWith = map[ObjectKind]bool{
+var boxCollidesWith = map[ObjectKind]bool{
 	NONE:           false,
 	CONVEYOR_LEFT:  true,
 	CONVEYOR_RIGHT: true,
@@ -21,8 +19,6 @@ var collidesWith = map[ObjectKind]bool{
 	GOAL:           false,
 	GOAL_FLAG:      false,
 }
-
-const gravity = 5
 
 func resetBox() {
 	// Resets box velocity
@@ -34,7 +30,7 @@ type Event int
 
 const (
 	NOTHING = Event(iota)
-	SPIKE_HIT
+	ENEMY_HIT
 	GOAL_REACHED
 )
 
@@ -43,11 +39,18 @@ func updateBox(dt float64) Event {
 	boxLock.Lock()
 	defer boxLock.Unlock()
 	var event Event
-	boxX, boxY, boxVelX, boxVelY, event = update(dt, boxX, boxY, boxVelX, boxVelY, collidesWith)
+	boxLastX, boxLastY = boxX, boxY
+	boxX, boxY, boxVelX, boxVelY, event = update(dt, boxX, boxY, boxVelX, boxVelY, 1, boxCollidesWith)
 	if At(int(boxX), int(boxY)).GetKind() == GOAL_FLAG {
 		return GOAL_REACHED
 	}
-	return event
+	if event != NOTHING {
+		return event
+	}
+	if anyEnemyCollidesWith(boxX, boxY) {
+		return ENEMY_HIT
+	}
+	return NOTHING
 }
 
 func teleportBox(x, y int) {
@@ -61,13 +64,13 @@ func renderBox() {
 	boxLock.Lock()
 	defer boxLock.Unlock()
 	sprite := sprites[BOX]
-	scale := float64(TileSize()) / float64(sprite.Width)
+	scale := float64(Scale())
 	pixelX, pixelY := TilefToPixel(boxX, boxY)
 	sprite.Render(pixelX, pixelY, scale)
 }
 
 func renderBoxWith(sprite *eng.Sprite) {
-	scale := float64(TileSize()) / float64(sprite.Width)
+	scale := float64(Scale())
 	pixelX, pixelY := TilefToPixel(boxX, boxY-1)
 	sprite.Render(pixelX, pixelY, scale)
 }

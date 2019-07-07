@@ -14,20 +14,26 @@ var hitSpike, goalReached bool
 var nextState state.State
 var mutex sync.Mutex
 var eventTime float64
+var shown bool
 
 func Load() {
+	eng.OnKeyUp(keyUp)
+}
 
+func ResetLevel() {
+	levels.Load(Level)
 }
 
 func Show() {
 	hitSpike = false
 	goalReached = false
 	nextState = state.GAME
-	levels.Load(Level)
+	shown = true
+	ResetLevel()
 }
 
 func Hide() {
-
+	shown = false
 }
 
 func Update(dt float64) {
@@ -39,7 +45,7 @@ func Update(dt float64) {
 				// After 1 second, reset level
 				common.SetGameSpeed(1)
 				hitSpike = false
-				levels.Load(Level)
+				ResetLevel()
 			} else {
 				// Go to level select
 				nextState = state.LEVEL_SELECT
@@ -73,4 +79,13 @@ func Render() state.State {
 		objects.RenderBoxSmile()
 	}
 	return nextState
+}
+
+func keyUp(key int) {
+	switch key {
+	case eng.KEY_r:
+		if !common.IsPaused() {
+			ResetLevel()
+		}
+	}
 }

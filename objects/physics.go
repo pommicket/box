@@ -34,11 +34,13 @@ func update(dt, x, y, velX, velY, conveyorSpeedMultiplier float64, collidesWith 
 		y -= TilesY
 	}
 
-	tileX := int(x)
-	tileY := int(y)
-
 	if velY != 0 {
-		yVal := tileY + sgn(velY)
+		var yVal int
+		if velY < 0 {
+			yVal = int(y)
+		} else {
+			yVal = int(y) + 1
+		}
 		inFrontOfY = []*Object{At(int(math.Floor(x)), yVal), At(int(math.Ceil(x)), yVal)}
 		if inFrontOfY[0] == inFrontOfY[1] {
 			inFrontOfY = inFrontOfY[:1]
@@ -52,8 +54,12 @@ func update(dt, x, y, velX, velY, conveyorSpeedMultiplier float64, collidesWith 
 			event = ENEMY_HIT
 		}
 		if collidesWith[obj.Kind] {
+			if velY > 0 {
+				y = math.Floor(y)
+			} else {
+				y = math.Ceil(y)
+			}
 			velY = 0
-			y = float64(int(y)) // Truncate
 			if obj.Kind == CONVEYOR_LEFT {
 				// Move to the left
 				velX = -conveyor_speed * conveyorSpeedMultiplier
@@ -66,7 +72,12 @@ func update(dt, x, y, velX, velY, conveyorSpeedMultiplier float64, collidesWith 
 	}
 
 	if velX != 0 {
-		xVal := tileX + sgn(velX)
+		var xVal int
+		if velX < 0 {
+			xVal = int(x)
+		} else {
+			xVal = int(math.Ceil(x))
+		}
 		inFrontOfX = []*Object{At(xVal, int(math.Floor(y))), At(xVal, int(math.Ceil(y)))}
 		if inFrontOfX[0] == inFrontOfX[1] {
 			inFrontOfX = inFrontOfX[:1]
@@ -80,8 +91,12 @@ func update(dt, x, y, velX, velY, conveyorSpeedMultiplier float64, collidesWith 
 			event = ENEMY_HIT
 		}
 		if collidesWith[obj.Kind] {
+			if velX > 0 {
+				x = math.Floor(x)
+			} else {
+				x = math.Ceil(x)
+			}
 			velX = 0
-			x = float64(int(x)) // Truncate
 		}
 		obj.mutex.Unlock()
 	}

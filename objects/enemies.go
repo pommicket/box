@@ -87,10 +87,20 @@ func (e *Enemy) CollidesWith(x, y float64) bool {
 	overlapsX := (x >= e.x && x < e.x+1) || (e.x >= x && e.x < x+1)
 	overlapsY := (y >= e.y && y < e.y+1) || (e.y >= y && e.y < y+1)
 	collides := overlapsX && overlapsY
-	if collides && boxLastY < e.y-1 {
-		// dies
-		e.dead = true
-		return false
+	if collides {
+		if gravity > 0 {
+			if boxLastY < e.y-1 {
+				// dies
+				e.dead = true
+				return false
+			}
+		} else if gravity < 0 {
+			if boxLastY > e.y+1 {
+				// dies
+				e.dead = true
+				return false
+			}
+		}
 	}
 	return collides
 }

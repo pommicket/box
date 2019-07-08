@@ -86,11 +86,11 @@ func update(dt, x, y, velX, velY float64, isEnemy bool, collidesWith map[ObjectK
 		locked[o] = true
 		oY := float64(o.Y)
 		if velY < 0 {
-			if lastY >= oY+1 && y < oY+1 {
+			if lastY >= oY+1 && y <= oY+1 {
 				newIFY = append(newIFY, o)
 			}
 		} else {
-			if lastY+1 <= oY && y+1 > oY {
+			if lastY+1 <= oY && y+1 >= oY {
 				newIFY = append(newIFY, o)
 			}
 		}
@@ -138,11 +138,11 @@ func update(dt, x, y, velX, velY float64, isEnemy bool, collidesWith map[ObjectK
 		}
 		oX := float64(o.X)
 		if velX < 0 {
-			if lastX >= oX+1 && x < oX+1 {
+			if lastX >= oX+1 && x <= oX+1 {
 				newIFX = append(newIFX, o)
 			}
 		} else {
-			if lastX+1 <= oX && x+1 > oX {
+			if lastX+1 <= oX && x+1 >= oX {
 				newIFX = append(newIFX, o)
 			}
 		}

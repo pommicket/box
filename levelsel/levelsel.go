@@ -69,8 +69,8 @@ func Load() {
 	for range levelNames {
 		var pos widgets.Position
 		pos.Move(x, y)
-		pos.W = 36 * objects.Scale()
-		pos.H = 36 * objects.Scale()
+		pos.W = 36
+		pos.H = 36
 		buttons = append(buttons, pos)
 		x += 8 + pos.W
 		if x+pos.W >= eng.Width() {
@@ -98,8 +98,8 @@ func Hide() {
 
 func showNumberBox(pos *widgets.Position, n int, completed bool) {
 	scale := objects.Scale()
-	W := pos.W
-	H := pos.H
+	W := pos.W * scale
+	H := pos.H * scale
 	x := pos.GetX()
 	y := pos.GetY()
 	scale *= 3
@@ -133,12 +133,19 @@ func mouseUp(button, x, y int) {
 	if button != eng.MOUSE_LEFT {
 		return
 	}
+	scale := objects.Scale()
 	for i := range buttons {
+		buttons[i].W *= scale
+		buttons[i].H *= scale
 		if buttons[i].Contains(x, y) {
 			game.Level = levelNames[i]
 			nextState = state.GAME
+			buttons[i].W /= scale
+			buttons[i].H /= scale
 			return
 		}
+		buttons[i].W /= scale
+		buttons[i].H /= scale
 	}
 }
 

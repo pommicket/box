@@ -52,6 +52,22 @@ func Height() int {
 	return winHeight
 }
 
+func SetSize(width, height int) {
+	winWidth, winHeight = width, height
+	sdlWindow.SetSize(int32(width), int32(height))
+}
+
+func SetFullscreen(fullscreen bool) {
+	if fullscreen {
+		sdlWindow.SetFullscreen(sdl.WINDOW_FULLSCREEN_DESKTOP)
+		var w, h int32
+		w, h = sdlWindow.GetSize()
+		winWidth, winHeight = int(w), int(h)
+	} else {
+		sdlWindow.SetFullscreen(0)
+	}
+}
+
 // Returns time difference between this frame and the last one.
 func DeltaTime() float64 {
 	return float64(deltaMs) / 1000

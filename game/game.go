@@ -12,6 +12,7 @@ import (
 )
 
 var Level string
+var Completed bool
 var hitSpike, goalReached bool
 var nextState state.State
 var mutex sync.Mutex
@@ -34,6 +35,7 @@ func Show() {
 	goalReached = false
 	nextState = state.GAME
 	shown = true
+	Completed = false
 	ResetLevel()
 }
 
@@ -66,6 +68,7 @@ func Update(dt float64) {
 			eventTime = common.AbsTime()
 			goalReached = true
 			common.PauseGame()
+			Completed = true
 		case objects.GOT_GRAVITY:
 			objects.ReverseGravity()
 		case objects.NOTHING:

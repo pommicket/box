@@ -33,6 +33,9 @@ func switchToNewState(newState state.State) {
 		levelsel.Hide()
 	case state.GAME:
 		game.Hide()
+		if game.Completed {
+			levelsel.Completed(game.Level)
+		}
 	}
 	state.Set(newState)
 	switch newState {

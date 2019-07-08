@@ -28,6 +28,7 @@ func resetBox() {
 	boxVelX = 0
 	boxVelY = 0
 	boxIsStrong = false
+	enemiesPaused = false
 }
 
 type Event int

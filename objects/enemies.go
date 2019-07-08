@@ -23,6 +23,7 @@ var enemyCollidesWith = map[ObjectKind]bool{
 	CONVEYOR_LEFT:    true,
 	CONVEYOR_RIGHT:   true,
 	SPIKE:            false,
+	WALL:             true,
 	PORTAL:           false,
 	GOAL:             false,
 	GOAL_FLAG:        false,

@@ -4,3 +4,4 @@ spikes
 puzzle
 modular
 enemy
+wall

@@ -23,6 +23,7 @@ const (
 	POWERUP_GRAVITY
 	POWERUP_STRENGTH
 	POWERUP_PAUSE
+	WALL
 )
 
 var spriteFilenames = map[ObjectKind]string{
@@ -37,6 +38,7 @@ var spriteFilenames = map[ObjectKind]string{
 	POWERUP_GRAVITY:  "gravity.bmp",
 	POWERUP_STRENGTH: "strength.bmp",
 	POWERUP_PAUSE:    "pause.bmp",
+	WALL:             "wall.bmp",
 }
 var sprites map[ObjectKind]*eng.Sprite
 var leftSprite, rightSprite eng.Sprite

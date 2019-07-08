@@ -20,6 +20,7 @@ var kindsForKeys = map[int]objects.ObjectKind{
 	eng.KEY_1: objects.POWERUP_GRAVITY,
 	eng.KEY_2: objects.POWERUP_STRENGTH,
 	eng.KEY_3: objects.POWERUP_PAUSE,
+	eng.KEY_w: objects.WALL,
 }
 
 var currentlyPlacing objects.ObjectKind

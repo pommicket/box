@@ -33,6 +33,7 @@ func ResetLevel() {
 func Show() {
 	hitSpike = false
 	goalReached = false
+	eventTime = 0
 	nextState = state.GAME
 	shown = true
 	Completed = false
@@ -103,6 +104,9 @@ func keyUp(key int) {
 			ResetLevel()
 		}
 	case eng.KEY_ESCAPE:
+		if goalReached || hitSpike {
+			return
+		}
 		mutex.Lock()
 		defer mutex.Unlock()
 		nextState = state.LEVEL_SELECT

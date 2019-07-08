@@ -1,2 +1,5 @@
 intro
 portal
+spikes
+puzzle
+modular

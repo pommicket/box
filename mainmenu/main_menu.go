@@ -59,8 +59,6 @@ func Render() state.State {
 	return nextState
 }
 
-var fullscreen bool
-
 func keyUp(key int) {
 	if !shown {
 		return
@@ -68,11 +66,5 @@ func keyUp(key int) {
 	switch key {
 	case eng.KEY_ESCAPE:
 		nextState = state.EXIT
-	case eng.KEY_f:
-		fullscreen = !fullscreen
-		eng.SetFullscreen(fullscreen)
-		if !fullscreen {
-			eng.SetSize(1920/2, 1080/2)
-		}
 	}
 }

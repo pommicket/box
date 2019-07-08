@@ -100,8 +100,8 @@ func showNumberBox(pos *widgets.Position, n int, completed bool) {
 	scale := objects.Scale()
 	W := pos.W * scale
 	H := pos.H * scale
-	x := pos.GetX()
-	y := pos.GetY()
+	x := pos.GetX() * scale
+	y := pos.GetY() * scale
 	scale *= 3
 	eng.SetColor(common.Color2)
 	if completed {
@@ -135,15 +135,21 @@ func mouseUp(button, x, y int) {
 	}
 	scale := objects.Scale()
 	for i := range buttons {
+		buttons[i].X *= scale
+		buttons[i].Y *= scale
 		buttons[i].W *= scale
 		buttons[i].H *= scale
 		if buttons[i].Contains(x, y) {
 			game.Level = levelNames[i]
 			nextState = state.GAME
+			buttons[i].X /= scale
+			buttons[i].Y /= scale
 			buttons[i].W /= scale
 			buttons[i].H /= scale
 			return
 		}
+		buttons[i].X /= scale
+		buttons[i].Y /= scale
 		buttons[i].W /= scale
 		buttons[i].H /= scale
 	}

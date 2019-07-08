@@ -83,10 +83,24 @@ func update() {
 	}
 }
 
+var fullscreen bool
+
+func keyUp(key int) {
+	switch key {
+	case eng.KEY_f:
+		fullscreen = !fullscreen
+		eng.SetFullscreen(fullscreen)
+		if !fullscreen {
+			eng.SetSize(1920/2, 1080/2)
+		}
+	}
+}
+
 func main() {
 	eng.PanicOnError = true
 	eng.Create("box", 1920/2, 1080/2)
 	eng.OnRender(render)
+	eng.OnKeyUp(keyUp)
 	eng.SetSpriteDir("sprites")
 	loadAll()
 	switchToNewState(state.MAIN_MENU)

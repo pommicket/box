@@ -6,3 +6,5 @@ modular
 enemy
 wall
 priorities
+luck
+gravity

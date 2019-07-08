@@ -112,5 +112,13 @@ func keyUp(key int) {
 			common.PauseGame()
 			pausedUsingP = true
 		}
+	case eng.KEY_EQUALS:
+		if common.GetGameSpeed() < 3 {
+			common.SetGameSpeed(common.GetGameSpeed() * 2)
+		}
+	case eng.KEY_MINUS:
+		if common.GetGameSpeed() > 0.3 {
+			common.SetGameSpeed(common.GetGameSpeed() / 2)
+		}
 	}
 }

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/pommicket/box/common"
 	"github.com/pommicket/box/eng"
 	"github.com/pommicket/box/game"
@@ -9,6 +10,7 @@ import (
 	"github.com/pommicket/box/mainmenu"
 	"github.com/pommicket/box/objects"
 	"github.com/pommicket/box/state"
+	"github.com/veandco/go-sdl2/mix"
 	"time"
 )
 
@@ -96,6 +98,41 @@ func keyUp(key int) {
 	}
 }
 
+var music *mix.Music
+
+func startMusic() bool {
+	// Music isn't necessary, so this function won't exit if there's an error.
+	if err := mix.Init(mix.INIT_OGG); err != nil {
+		fmt.Println("Error initializing mixer:", err)
+		return false
+	}
+
+	if err := mix.OpenAudio(44100, mix.DEFAULT_FORMAT, 1, 1024); err != nil {
+		fmt.Println("Error opening audio device:", err)
+		return true
+	}
+	var err error
+	music, err = mix.LoadMUS("audio/music.ogg")
+	if err != nil {
+		fmt.Println("Error loading music:", err)
+		return true
+	}
+
+	if err := music.FadeIn(-1, 5000); err != nil {
+		fmt.Println("Error playing music:", err)
+		return true
+	}
+	return true
+}
+
+func stopMusic() {
+	if music != nil {
+		music.Free()
+	}
+	mix.HaltMusic()
+	mix.Quit()
+}
+
 func main() {
 	eng.PanicOnError = true
 	eng.Create("box", 1920/2, 1080/2)
@@ -104,6 +141,11 @@ func main() {
 	eng.SetSpriteDir("sprites")
 	loadAll()
 	switchToNewState(state.MAIN_MENU)
+	started := startMusic()
+
 	go update()
 	eng.Run()
+	if started {
+		stopMusic()
+	}
 }

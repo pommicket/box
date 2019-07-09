@@ -13,3 +13,4 @@ gravity3
 momentum
 strength
 manyenemies
+strength_gravity

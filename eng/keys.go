@@ -246,12 +246,12 @@ const (
 // Converts an SDL keycode to an eng keycode
 func fromSdlKeycode(keycode sdl.Keycode) int {
 	// Make keycode numbers smaller (why? why not.)
-	code := int(keycode)
+	code := int64(keycode)
 	if (code & 0x40000000) != 0 {
 		code &= ^0x400000000
 		code |= 0x200
 	}
-	return code
+	return int(code)
 }
 
 // Converts an eng keycode to an SDL keycode

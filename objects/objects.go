@@ -211,8 +211,9 @@ func RenderAll(showGrid bool) {
 	for y := range objects {
 		for x := range objects[y] {
 			if showGrid {
-				eng.SetRGBA(common.Color2.R, common.Color2.G, common.Color2.B, 25)
-				eng.Rectangle(x*TileSize(), y*TileSize(), TileSize(), TileSize(), eng.DRAW)
+				eng.SetRGBA(255, 255, 255, 25)
+				eng.ColorSprite()
+				sprites[WALL].Render(x*TileSize(), y*TileSize(), float64(Scale()))
 			}
 			At(x, y).Render()
 		}

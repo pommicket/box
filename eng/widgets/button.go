@@ -31,8 +31,18 @@ type Button struct {
 
 // Updates the dimensions of the button (Pos.W, Pos.H)
 func (b *Button) updateDims() {
-	b.Pos.W = int(float64(b.Sprite.Width) * b.Scale)
-	b.Pos.H = int(float64(b.Sprite.Height) * b.Scale)
+	b.Pos.W = b.Width()
+	b.Pos.H = b.Height()
+}
+
+// Returns the width of the button after scaling, in pixels
+func (b *Button) Width() int {
+	return int(float64(b.Sprite.Width) * b.Scale)
+}
+
+// Returns the height of the button after scaling, in pixels
+func (b *Button) Height() int {
+	return int(float64(b.Sprite.Height) * b.Scale)
 }
 
 // Sets all sprites to the same sprite
@@ -60,7 +70,7 @@ func (b *Button) LoadWithSuffixes(filename string) {
 // Shows the button
 func (b *Button) Show() {
 	if !b.callbacksSet {
-		eng.OnRender(b.render)
+		eng.OnRender(b.Render)
 		eng.OnMouseMove(b.mouseMove)
 		eng.OnMouseDown(b.mouseDown)
 		eng.OnMouseUp(b.mouseUp)
@@ -116,7 +126,7 @@ func (b *Button) mouseUp(button, x, y int) {
 }
 
 // Render the button
-func (b *Button) render() {
+func (b *Button) Render() {
 	if !b.Shown {
 		return
 	}

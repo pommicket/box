@@ -19,6 +19,16 @@ var buttons []widgets.Position // Use pos for custom rendering
 var digits []eng.Sprite
 var shown bool
 var nextState state.State
+var winBtn widgets.Button
+
+func AreAllCompleted() bool {
+	for _, v := range levelsCompleted {
+		if !v {
+			return false
+		}
+	}
+	return true
+}
 
 func Load() {
 	levelsCompleted = make(map[string]bool)
@@ -82,6 +92,11 @@ func Load() {
 	digits = make([]eng.Sprite, 10)
 	for i := range digits {
 		digits[i].Load(fmt.Sprintf("%v.bmp", i))
+	}
+	winBtn.LoadAll("win.bmp")
+	winBtn.OnClick = func() {
+		game.Level = "i"
+		nextState = state.GAME
 	}
 	eng.OnMouseUp(mouseUp)
 	eng.OnKeyUp(keyUp)
@@ -167,9 +182,19 @@ func keyUp(key int) {
 func Render() state.State {
 	eng.SetColor(common.Color1)
 	eng.Clear()
+	if AreAllCompleted() {
+		winBtn.Show()
+	} else {
+		winBtn.Hide()
+	}
 	for i := range buttons {
 		showNumberBox(&buttons[i], i, levelsCompleted[levelNames[i]])
 	}
+	winBtn.Render()
+	winBtn.Scale = 4 * float64(objects.Scale())
+	x := eng.Width()/2 - winBtn.Width()/2
+	y := eng.Height() - winBtn.Height() - int(8*objects.Scale())
+	winBtn.Pos.Move(x, y)
 	return nextState
 }
 

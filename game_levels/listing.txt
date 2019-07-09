@@ -17,3 +17,4 @@ strength_gravity
 pause
 pause2
 pause_strength
+all

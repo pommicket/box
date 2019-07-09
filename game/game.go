@@ -18,8 +18,10 @@ var nextState state.State
 var mutex sync.Mutex
 var eventTime float64
 var shown bool
+var inf eng.Sprite
 
 func Load() {
+	inf.Load("i.bmp")
 	eng.OnKeyUp(keyUp)
 }
 
@@ -86,6 +88,9 @@ func Update(dt float64) {
 func Render() state.State {
 	eng.SetColor(common.Color1)
 	eng.Clear()
+	if Level == "i" {
+		inf.Render(150*objects.Scale(), 150*objects.Scale(), 32*float64(objects.Scale()))
+	}
 	objects.RenderAll(false)
 	mutex.Lock()
 	defer mutex.Unlock()

@@ -10,3 +10,6 @@ luck
 gravity
 gravity2
 gravity3
+momentum
+strength
+manyenemies

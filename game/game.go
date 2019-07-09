@@ -24,6 +24,7 @@ func Load() {
 }
 
 func ResetLevel() {
+	levels.SetLevelLoaded(false)
 	if err := levels.Load(Level); err != nil {
 		fmt.Println("Error loading level:", err)
 		os.Exit(-1)
@@ -42,9 +43,13 @@ func Show() {
 
 func Hide() {
 	shown = false
+	levels.SetLevelLoaded(false)
 }
 
 func Update(dt float64) {
+	if !levels.IsLevelLoaded() {
+		return
+	}
 	mutex.Lock()
 	defer mutex.Unlock()
 	if hitSpike || goalReached {

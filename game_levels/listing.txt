@@ -14,3 +14,4 @@ momentum
 strength
 manyenemies
 strength_gravity
+pause

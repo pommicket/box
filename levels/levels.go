@@ -4,6 +4,7 @@ import (
 	"encoding/binary"
 	"github.com/pommicket/box/objects"
 	"os"
+	"sync"
 )
 
 type Version struct {
@@ -12,6 +13,21 @@ type Version struct {
 }
 
 var version = Version{0, 0}
+
+var loaded bool
+var mutex sync.Mutex
+
+func IsLevelLoaded() bool {
+	mutex.Lock()
+	defer mutex.Unlock()
+	return loaded
+}
+
+func SetLevelLoaded(l bool) {
+	mutex.Lock()
+	defer mutex.Unlock()
+	loaded = l
+}
 
 // Saves current objects as a level.
 func Save(filename string) error {
@@ -67,5 +83,6 @@ func Load(filename string) error {
 
 		}
 	}
+	SetLevelLoaded(true)
 	return nil
 }

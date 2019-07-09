@@ -3,7 +3,6 @@ package eng
 
 import (
 	"github.com/veandco/go-sdl2/sdl"
-	"github.com/veandco/go-sdl2/ttf"
 )
 
 var (
@@ -25,9 +24,6 @@ var (
 func Create(title string, width, height int) error {
 	if sdl.Init(sdl.INIT_VIDEO) != nil {
 		return throwSDL("init sdl", "Failed to initialize SDL.")
-	}
-	if ttf.Init() != nil {
-		return throwTTF("init ttf", "Failed to initialize SDL TTF.")
 	}
 	var err error
 	sdlWindow, err = sdl.CreateWindow(title, sdl.WINDOWPOS_UNDEFINED, sdl.WINDOWPOS_UNDEFINED, int32(width), int32(height), sdl.WINDOW_SHOWN)
@@ -96,8 +92,6 @@ func Run() {
 func destroy() {
 	sdlWindow.Destroy()
 	sdlRenderer.Destroy()
-	closeAllFonts()
-	ttf.Quit()
 	sdl.Quit()
 }
 

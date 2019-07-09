@@ -2,7 +2,6 @@ package eng
 
 import (
 	"github.com/veandco/go-sdl2/sdl"
-	"github.com/veandco/go-sdl2/ttf"
 )
 
 type Error struct {
@@ -39,10 +38,4 @@ func throw(short, long string) error {
 // The current SDL error will be appended to the given message.
 func throwSDL(short, long string) error {
 	return throw(short, long+", SDL Error: "+sdl.GetError().Error())
-}
-
-// Panics with error message if panicOnError, otherwise returns the error.
-// The current TTF error will be appended to the given message.
-func throwTTF(short, long string) error {
-	return throw(short, long+", TTF Error: "+ttf.GetError().Error())
 }

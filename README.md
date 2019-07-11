@@ -4,7 +4,8 @@ A game wherein you are a box.
 
 ![Box](box1.png)
 
-It was made for [this game jam](https://itch.io/jam/anything-goes-jam-8-bits-to-infinity).
+It was made for [this game jam](https://itch.io/jam/anything-goes-jam-8-bits-to-infinity), and it can be found on itch.io at [https://pommicket.itch.io/box](https://pommicket.itch.io/box).
+
 
 ## Controls, etc.
 
